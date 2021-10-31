@@ -1,5 +1,4 @@
 ﻿using Quartz;
-using System.Threading.Tasks;
 
 namespace WeatherService.WeatherUpdater.Schedule
 {

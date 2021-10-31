@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Quartz;
 using Quartz.Impl;
-using Quartz.Impl.Matchers;
 using WeatherService.WeatherUpdaterService;
 
 namespace WeatherService.WeatherUpdater.Schedule
@@ -21,7 +16,7 @@ namespace WeatherService.WeatherUpdater.Schedule
 
         public void CreateAndRunTask()
         {
-            var interval = int.Parse(_configuration["WeatherCallingFrequency"]);
+            var interval = int.Parse(_configuration["WeatherServiceConfigs:WeatherCallingFrequency"]); 
             var schedulerFactory = new StdSchedulerFactory();
             _scheduler = schedulerFactory.GetScheduler().Result;
 

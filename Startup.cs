@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Quartz;
-using Quartz.Impl;
+using WeatherService.Models;
 using WeatherService.WeatherUpdater.Schedule;
+using WeatherService.WeatherUpdaterService;
 
 namespace WeatherService
 {
@@ -17,11 +17,17 @@ namespace WeatherService
         }
 
         public IConfiguration Configuration { get; }
-        
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IConfigurationRoot WeatherConfigs { get; set; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IScheduleWeatherUpdates, ScheduleWeatherUpdates>();
+            var getWeather = new GetWeather(Configuration);
+            services.AddSingleton<GetWeather>(getWeather);
+
+            services.Configure<WeatherConfigs>(Configuration.GetSection("WeatherServiceConfigs"));
+            
             services.AddOptions();
             services.AddAuthorization();
         }
@@ -44,12 +50,14 @@ namespace WeatherService
             lifetime.ApplicationStarted.Register(weatherService.CreateAndRunTask);
             lifetime.ApplicationStopped.Register(weatherService.Stop);
 
+            var builder = new ConfigurationBuilder()
+            .SetBasePath(env.ContentRootPath)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            WeatherConfigs = builder.Build();
+            
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
         }
     }
 }
