@@ -11,11 +11,17 @@ namespace WeatherService.WeatherUpdaterService.Weather
 {
     public class GetWeatherForcaste : IGetWeatherForcaste
     {
+        private readonly IHttpClientFactory _clientFactory;
+
+        public GetWeatherForcaste(IHttpClientFactory _clientFactory)
+        {
+            this._clientFactory = _clientFactory;
+        }
+
         public async Task<List<Root>> GetWeatherFromThirdParty()
         {
             var weatherModels = new List<Root>();
-            using (var client = WeatherHelper.GetHttpClient())
-            {
+            
                 try
                 {
                     var appId = "6e630221f0656c28f09b1bc7c217eea2";
@@ -25,7 +31,13 @@ namespace WeatherService.WeatherUpdaterService.Weather
 
                     foreach (var city in weatherCities)
                     {
-                        HttpResponseMessage response = await client.GetAsync(string.Format("https://api.openweathermap.org/data/2.5/forecast?q={0}&cnt={1}&appid={2}", city, forcasteDays, appId));
+                        var URI = string.Format("https://api.openweathermap.org/data/2.5/forecast?q={0}&cnt={1}&appid={2}", city, forcasteDays, appId);
+
+                        var request = new HttpRequestMessage(HttpMethod.Get, URI);
+
+                        var client = _clientFactory.CreateClient();
+                        var response = await client.SendAsync(request);
+
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
                             return default;
@@ -43,13 +55,12 @@ namespace WeatherService.WeatherUpdaterService.Weather
                         weatherModels.Add(weatherModel);
                     }
                 }
-                catch (Exception ex)
+                catch (HttpRequestException ex)
                 {
                     var messaage = ex;
                 }
 
-                return weatherModels;
-            }
+                return weatherModels;            
         }
     }
 }

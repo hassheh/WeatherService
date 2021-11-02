@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WeatherService.WeatherUpdaterService.Weather;
+using WeatherService.WeatherUpdaterService.Schedule;
 
 namespace WeatherService
 {
@@ -22,7 +23,7 @@ namespace WeatherService
             services.AddOptions();
             //services.AddSingleton<IScheduleWeatherUpdates, ScheduleWeatherUpdates>();
             services.AddSingleton<IGetWeatherForcaste, GetWeatherForcaste>();
-            
+            services.AddHttpClient();
             services.AddAuthorization();
             services.AddRazorPages();
         }
@@ -30,7 +31,7 @@ namespace WeatherService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
-            IHostApplicationLifetime lifetime, IConfiguration configuration)
+            IHostApplicationLifetime lifetime, IGetWeatherForcaste igetWeatherForcaste)
         {
             if (env.IsDevelopment())
             {
@@ -41,9 +42,9 @@ namespace WeatherService
                 app.UseExceptionHandler("/Error");
             }
 
-            //var weatherService = new ScheduleWeatherUpdates(configuration);
-            //lifetime.ApplicationStarted.Register(weatherService.CreateAndRunTask);
-            //lifetime.ApplicationStopped.Register(weatherService.Stop);
+            var weatherService = new ScheduleWeatherUpdate(igetWeatherForcaste);
+            lifetime.ApplicationStarted.Register(weatherService.StartAsync);
+            lifetime.ApplicationStopped.Register(weatherService.StopAsync);
 
             app.UseStaticFiles();
             app.UseRouting();
