@@ -3,11 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Quartz;
-using WeatherService.Models;
-using WeatherService.WeatherUpdater;
-using WeatherService.WeatherUpdater.Schedule;
-using WeatherService.WeatherUpdaterService;
 using WeatherService.WeatherUpdaterService.Weather;
 
 namespace WeatherService
@@ -25,7 +20,7 @@ namespace WeatherService
     public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.AddSingleton<IScheduleWeatherUpdates, ScheduleWeatherUpdates>();
+            //services.AddSingleton<IScheduleWeatherUpdates, ScheduleWeatherUpdates>();
             services.AddSingleton<IGetWeatherForcaste, GetWeatherForcaste>();
             
             services.AddAuthorization();
@@ -46,9 +41,9 @@ namespace WeatherService
                 app.UseExceptionHandler("/Error");
             }
 
-            var weatherService = new ScheduleWeatherUpdates(configuration);
-            lifetime.ApplicationStarted.Register(weatherService.CreateAndRunTask);
-            lifetime.ApplicationStopped.Register(weatherService.Stop);
+            //var weatherService = new ScheduleWeatherUpdates(configuration);
+            //lifetime.ApplicationStarted.Register(weatherService.CreateAndRunTask);
+            //lifetime.ApplicationStopped.Register(weatherService.Stop);
 
             app.UseStaticFiles();
             app.UseRouting();
