@@ -51,6 +51,7 @@ namespace WeatherService.Models
         public float pop { get; set; }
         public Sys sys { get; set; }
         public string dt_txt { get; set; }
+        public bool LimitExceeds { get; set; }
     }
 
     public class Coord

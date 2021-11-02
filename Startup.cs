@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Quartz;
 using WeatherService.Models;
+using WeatherService.WeatherUpdater;
 using WeatherService.WeatherUpdater.Schedule;
 using WeatherService.WeatherUpdaterService;
+using WeatherService.WeatherUpdaterService.Weather;
 
 namespace WeatherService
 {
@@ -21,10 +24,12 @@ namespace WeatherService
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IScheduleWeatherUpdates, ScheduleWeatherUpdates>();
-            
             services.AddOptions();
+            services.AddSingleton<IScheduleWeatherUpdates, ScheduleWeatherUpdates>();
+            services.AddSingleton<IGetWeatherForcaste, GetWeatherForcaste>();
+            
             services.AddAuthorization();
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

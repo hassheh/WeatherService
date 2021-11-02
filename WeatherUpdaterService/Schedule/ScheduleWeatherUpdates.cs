@@ -19,7 +19,6 @@ namespace WeatherService.WeatherUpdater.Schedule
             var interval = int.Parse(_configuration["WeatherServiceConfigs:WeatherCallingFrequency"]); 
             var schedulerFactory = new StdSchedulerFactory();
             _scheduler = schedulerFactory.GetScheduler().Result;
-
             _scheduler.Start().Wait();
             var trigger = GetTriggerWithInterval(interval);
             var weatherJob = CreateWeatherJob("GetWeather");
