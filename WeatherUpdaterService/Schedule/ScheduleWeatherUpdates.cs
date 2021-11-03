@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,19 +11,22 @@ namespace WeatherService.WeatherUpdaterService.Schedule
     {
         private Timer timer;
         private readonly IGetWeatherForcaste igetWeatherForcaste;
+        private readonly IConfiguration _configuration;
 
-        public ScheduleWeatherUpdate(IGetWeatherForcaste igetWeatherForcaste)
+        public ScheduleWeatherUpdate(IGetWeatherForcaste igetWeatherForcaste, IConfiguration _configuration)
         {
             this.igetWeatherForcaste = igetWeatherForcaste;
+            this._configuration = _configuration;
         }
 
         public void StartAsync()
         {
-            timer = new Timer(DoWork, null, TimeSpan.Zero,
-                TimeSpan.FromHours(1));
+            var interval = int.Parse(_configuration["WeatherServiceConfigs:WeatherCallingFrequency"]);
+            timer = new Timer(GetWeather, null, TimeSpan.Zero,
+                TimeSpan.FromMinutes(interval));
         }
 
-        private void DoWork(object state)
+        private void GetWeather(object state)
         {
             try
             {

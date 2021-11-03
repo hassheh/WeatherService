@@ -1,66 +1,58 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WeatherService.Models;
-using WeatherService.WeatherUpdaterService.Helper;
 
 namespace WeatherService.WeatherUpdaterService.Weather
 {
     public class GetWeatherForcaste : IGetWeatherForcaste
     {
         private readonly IHttpClientFactory _clientFactory;
-
-        public GetWeatherForcaste(IHttpClientFactory _clientFactory)
+        private readonly IConfiguration _configuration;
+        public GetWeatherForcaste(IHttpClientFactory _clientFactory, IConfiguration _configuration)
         {
             this._clientFactory = _clientFactory;
+            this._configuration = _configuration;
         }
 
         public async Task<List<Root>> GetWeatherFromThirdParty()
         {
             var weatherModels = new List<Root>();
             
-                try
+            try
+            {
+                var appId = _configuration["WeatherServiceConfigs:AppId"];
+                var cities = _configuration["WeatherServiceConfigs:WeatherCities"];
+                var forcasteDays = int.Parse(_configuration["WeatherServiceConfigs:ForcasteDays"]);
+                
+                var weatherCities = cities.Split(',');
+                
+                foreach (var city in weatherCities)
                 {
-                    var appId = "6e630221f0656c28f09b1bc7c217eea2";
-                    var cities = "espoo,vaasa";
-                    var weatherCities = cities.Split(',');
-                    var forcasteDays = 5;
+                    var uri = string.Format("https://api.openweathermap.org/data/2.5/forecast?q={0}&cnt={1}&appid={2}", city, forcasteDays, appId);
 
-                    foreach (var city in weatherCities)
+                    var request = new HttpRequestMessage(HttpMethod.Get, uri);
+                    var client = _clientFactory.CreateClient();
+                    var response = await client.SendAsync(request);
+
+                    if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        var URI = string.Format("https://api.openweathermap.org/data/2.5/forecast?q={0}&cnt={1}&appid={2}", city, forcasteDays, appId);
-
-                        var request = new HttpRequestMessage(HttpMethod.Get, URI);
-
-                        var client = _clientFactory.CreateClient();
-                        var response = await client.SendAsync(request);
-
-                        if (response.StatusCode != HttpStatusCode.OK)
-                        {
-                            return default;
-                        }
-                        string json = await response.Content.ReadAsStringAsync();
-                        var weatherModel = JsonConvert.DeserializeObject<Root>(json);
-                        weatherModel.list.ForEach(w =>
-                        {
-                            if (WeatherHelper.ConvertKelvinToClesius(w.main.temp) < 10)
-                                w.LimitExceeds = true;
-                            else
-                                w.LimitExceeds = false;
-                        });
-
-                        weatherModels.Add(weatherModel);
+                        return default;
                     }
+                    string weatherDataJson = await response.Content.ReadAsStringAsync();
+                    var weatherModel = JsonConvert.DeserializeObject<Root>(weatherDataJson);                    
+                    weatherModels.Add(weatherModel);
                 }
-                catch (HttpRequestException ex)
-                {
-                    var messaage = ex;
-                }
+            }
+            catch (HttpRequestException ex)
+            {
+            }
 
-                return weatherModels;            
+            return weatherModels;            
         }
     }
 }

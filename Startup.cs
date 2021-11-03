@@ -31,7 +31,7 @@ namespace WeatherService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
-            IHostApplicationLifetime lifetime, IGetWeatherForcaste igetWeatherForcaste)
+            IHostApplicationLifetime lifetime, IGetWeatherForcaste igetWeatherForcaste, IConfiguration configuration)
         {
             if (env.IsDevelopment())
             {
@@ -42,7 +42,7 @@ namespace WeatherService
                 app.UseExceptionHandler("/Error");
             }
 
-            var weatherService = new ScheduleWeatherUpdate(igetWeatherForcaste);
+            var weatherService = new ScheduleWeatherUpdate(igetWeatherForcaste, configuration);
             lifetime.ApplicationStarted.Register(weatherService.StartAsync);
             lifetime.ApplicationStopped.Register(weatherService.StopAsync);
 

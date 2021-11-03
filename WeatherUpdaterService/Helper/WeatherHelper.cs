@@ -9,16 +9,15 @@ namespace WeatherService.WeatherUpdaterService.Helper
 {
     public class WeatherHelper
     {
-        public static HttpClient GetHttpClient()
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            return client;
-        }
-
         public static double ConvertKelvinToClesius(double kelvinTemp)
         {
             return 273.15 - kelvinTemp;
+        }
+
+        public static DateTime ConvertUnixToDateTime(long unixTime)
+        {
+            DateTimeOffset dateTimeOffSet = DateTimeOffset.FromUnixTimeSeconds(unixTime);
+            return dateTimeOffSet.DateTime;
         }
     } 
 }
