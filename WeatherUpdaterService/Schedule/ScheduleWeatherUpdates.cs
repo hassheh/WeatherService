@@ -21,26 +21,10 @@ namespace WeatherService.WeatherUpdaterService.Schedule
 
         public void StartAsync()
         {
-            var interval = int.Parse(_configuration["WeatherServiceConfigs:WeatherCallingFrequency"]);
-            timer = new Timer(GetWeather, null, TimeSpan.Zero,
-                TimeSpan.FromMinutes(interval));
-        }
-
-        private void GetWeather(object state)
-        {
-            try
-            {
-                igetWeatherForcaste.GetWeatherFromThirdParty();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: " + ex.Message);
-
-                if (ex.InnerException != null && ex.InnerException.Message == null)
-                    Console.WriteLine("InnerEx: " + ex.InnerException);
-
-                throw;
-            }
+            var parsed = int.TryParse(_configuration["WeatherServiceConfigs:WeatherCallingFrequencyInMinutes"], out int callingFrequency);
+            if (parsed)
+                timer = new Timer(igetWeatherForcaste.GetAndTransformAndSaveWeather, null, TimeSpan.Zero,
+                    TimeSpan.FromMinutes(callingFrequency));
         }
 
         public void StopAsync()

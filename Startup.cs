@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WeatherService.WeatherUpdaterService.Weather;
 using WeatherService.WeatherUpdaterService.Schedule;
+using WeatherService.WeatherUpdaterService.BusinessLogic;
+using WeatherService.WeatherUpdaterService;
 
 namespace WeatherService
 {
@@ -21,7 +23,9 @@ namespace WeatherService
     public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            //services.AddSingleton<IScheduleWeatherUpdates, ScheduleWeatherUpdates>();
+            services.AddSingleton<IWeatherLogic, WeatherLogic>();
+            services.AddSingleton<ISaveWeather, SaveWeather>();
+            services.AddSingleton<IScheduleWeatherUpdate, ScheduleWeatherUpdate>();
             services.AddSingleton<IGetWeatherForcaste, GetWeatherForcaste>();
             services.AddHttpClient();
             services.AddAuthorization();
