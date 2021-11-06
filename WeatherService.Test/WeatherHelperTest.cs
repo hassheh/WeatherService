@@ -3,7 +3,7 @@ using WeatherService.WeatherUpdaterService.Helper;
 
 namespace WeatherService.Test
 {
-    public class Tests
+    public class WeatherHelperTest
     {
         [SetUp]
         public void Setup()
