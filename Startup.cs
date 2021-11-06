@@ -26,7 +26,7 @@ namespace WeatherService
             services.AddSingleton<IWeatherLogic, WeatherLogic>();
             services.AddSingleton<ISaveWeather, SaveWeather>();
             services.AddSingleton<IScheduleWeatherUpdate, ScheduleWeatherUpdate>();
-            services.AddSingleton<IGetWeatherForcaste, GetWeatherForcaste>();
+            services.AddSingleton<IGetWeatherForcast, GetWeatherForcast>();
             services.AddHttpClient();
             services.AddAuthorization();
             services.AddRazorPages();
@@ -35,7 +35,7 @@ namespace WeatherService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
-            IHostApplicationLifetime lifetime, IGetWeatherForcaste igetWeatherForcaste, IConfiguration configuration)
+            IHostApplicationLifetime lifetime, IGetWeatherForcast igetWeatherForcast, IConfiguration configuration)
         {
             if (env.IsDevelopment())
             {
@@ -46,7 +46,7 @@ namespace WeatherService
                 app.UseExceptionHandler("/Error");
             }
 
-            var weatherService = new ScheduleWeatherUpdate(igetWeatherForcaste, configuration);
+            var weatherService = new ScheduleWeatherUpdate(igetWeatherForcast, configuration);
             lifetime.ApplicationStarted.Register(weatherService.StartAsync);
             lifetime.ApplicationStopped.Register(weatherService.StopAsync);
 

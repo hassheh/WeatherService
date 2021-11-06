@@ -4,7 +4,7 @@ using WeatherService.Models;
 
 namespace WeatherService.WeatherUpdaterService.Weather
 {
-    public interface IGetWeatherForcaste
+    public interface IGetWeatherForcast
     {
         Task<List<Root>> GetWeatherFromThirdParty();
         void GetAndTransformAndSaveWeather(object state);

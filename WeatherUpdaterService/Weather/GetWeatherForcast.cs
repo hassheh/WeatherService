@@ -7,18 +7,17 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using WeatherService.Models;
 using WeatherService.WeatherUpdaterService.BusinessLogic;
-using WeatherService.WeatherUpdaterService.Helper;
 
 namespace WeatherService.WeatherUpdaterService.Weather
 {
-    public class GetWeatherForcaste : IGetWeatherForcaste
+    public class GetWeatherForcast : IGetWeatherForcast
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly IConfiguration _configuration;
         private readonly ISaveWeather _saveWeather;
         private readonly IWeatherLogic _weatherLogic;
 
-        public GetWeatherForcaste(IHttpClientFactory _clientFactory, IConfiguration _configuration, 
+        public GetWeatherForcast(IHttpClientFactory _clientFactory, IConfiguration _configuration, 
             ISaveWeather _saveWeather, IWeatherLogic _weatherLogic)
         {
             this._clientFactory = _clientFactory;
@@ -91,16 +90,16 @@ namespace WeatherService.WeatherUpdaterService.Weather
                         }
                     }
                 }
-            } 
+            }
 
             return weatherModels; 
         }
         private async Task<HttpResponseMessage> MakeAPICall(string city)
         {
-            var forcasteDays = int.Parse(_configuration["WeatherServiceConfigs:ForcasteDays"]);
+            var forcastDays = int.Parse(_configuration["WeatherServiceConfigs:ForcastDays"]);
             var appId = _configuration["WeatherServiceConfigs:AppId"];
 
-            var uri = string.Format("https://api.openweathermap.org/data/2.5/forecast?q={0}&cnt={1}&appid={2}", city, forcasteDays, appId);
+            var uri = string.Format("https://api.openweathermap.org/data/2.5/forecast?q={0}&cnt={1}&appid={2}", city, forcastDays, appId);
 
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             var client = _clientFactory.CreateClient();

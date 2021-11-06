@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using WeatherService.WeatherUpdaterService.Weather;
 
 namespace WeatherService.WeatherUpdaterService.Schedule
@@ -10,12 +8,12 @@ namespace WeatherService.WeatherUpdaterService.Schedule
     public class ScheduleWeatherUpdate : IScheduleWeatherUpdate
     {
         private Timer timer;
-        private readonly IGetWeatherForcaste igetWeatherForcaste;
+        private readonly IGetWeatherForcast igetWeatherForcast;
         private readonly IConfiguration _configuration;
 
-        public ScheduleWeatherUpdate(IGetWeatherForcaste igetWeatherForcaste, IConfiguration _configuration)
+        public ScheduleWeatherUpdate(IGetWeatherForcast igetWeatherForcast, IConfiguration _configuration)
         {
-            this.igetWeatherForcaste = igetWeatherForcaste;
+            this.igetWeatherForcast = igetWeatherForcast;
             this._configuration = _configuration;
         }
 
@@ -23,7 +21,7 @@ namespace WeatherService.WeatherUpdaterService.Schedule
         {
             var parsed = int.TryParse(_configuration["WeatherServiceConfigs:WeatherCallingFrequencyInMinutes"], out int callingFrequency);
             if (parsed)
-                timer = new Timer(igetWeatherForcaste.GetAndTransformAndSaveWeather, null, TimeSpan.Zero,
+                timer = new Timer(igetWeatherForcast.GetAndTransformAndSaveWeather, null, TimeSpan.Zero,
                     TimeSpan.FromMinutes(callingFrequency));
         }
 
