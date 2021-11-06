@@ -15,7 +15,6 @@ namespace WeatherService.Test
         {
             var clesiusTemp = WeatherHelper.ConvertKelvinToClesius(300);
             Assert.AreEqual(clesiusTemp, -26.85);
-            Assert.Pass();
         }
     }
 }
