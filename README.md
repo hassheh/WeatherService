@@ -19,5 +19,5 @@ WeatherCallingFrequencyInMinutes: The open weather API will be called after this
 
 Run command "dotnet run" in PowerShell in project directory.
 
-Some package issues could be resolved by the command "dotnet restore".
+Some package issues if any could be resolved by the command "dotnet restore".
 
